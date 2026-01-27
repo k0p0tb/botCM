@@ -7,7 +7,7 @@ from core.services import ConsultationService
 class IsAdmin(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         # Получаем ID из настроек
-        admin_id_str = os.getenv("ADMIN_ID", "295718501")
+        admin_id_str = os.getenv("ADMIN_ID", "0")
         admin_id = int(admin_id_str)
         
         # Получаем ваш реальный ID

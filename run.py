@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from bot.handlers import patient, doctor
 from bot.middlewares.db import DbSessionMiddleware
@@ -9,7 +10,8 @@ from bot.handlers import patient, doctor, chat
 from bot.handlers import patient, doctor, chat, admin
 
 # Загружаем токен (лучше через dotenv)
-TOKEN = "8490900753:AAEgSroh-yyWD1jQpCGX2-pFTWsMGL7mXdw" 
+load_dotenv()
+TOKEN = os.getenv("BOT_TOKEN")
 
 async def main():
     logging.basicConfig(level=logging.INFO)
