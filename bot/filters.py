@@ -15,8 +15,9 @@ class IsAdmin(BaseFilter):
         
         # ПЕЧАТАЕМ В КОНСОЛЬ (ДЛЯ ОТЛАДКИ)
         print(f"DEBUG: Ваш ID={user_id}, ID в настройках={admin_id}")
-        
+
         return user_id == admin_id
+    
 
 class IsDoctor(BaseFilter):
     async def __call__(self, message: Message, session: AsyncSession) -> bool:

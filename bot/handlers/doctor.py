@@ -30,11 +30,30 @@ async def show_queue(message: Message, service: ConsultationService):
 async def accept_patient(callback: CallbackQuery, service: ConsultationService):
     cons_id = int(callback.data.split("_")[1])
     
-    # АТОМАРНАЯ ПРОВЕРКА
-    success = await service.assign_doctor(cons_id, callback.from_user.id)
+    # Страховка: создаем врача в базе, если его там нет
+    await service.create_user_if_not_exists(
+        telegram_id=callback.from_user.id,
+        username=callback.from_user.username,
+        role="doctor",
+        full_name=callback.from_user.full_name
+    )
     
-    if success:
-        await callback.message.edit_text(f"✅ Вы взяли пациента по заявке #{cons_id}. Можно начинать чат.")
-        # Тут можно отправить уведомление пациенту через bot.send_message
-    else:
+    # Вызываем обновленный метод
+    status = await service.assign_doctor(cons_id, callback.from_user.id)
+    
+    if status == "success":
+        await callback.message.edit_text(
+            f"✅ Вы взяли пациента по заявке #{cons_id}.\n"
+            f"Начинайте консультацию! Пациент ждет."
+        )
+        # (Тут можно добавить уведомление пациенту)
+        
+    elif status == "busy":
+        # Показываем всплывающее уведомление (Alert), не удаляя сообщение с кнопкой
+        await callback.answer(
+            "⛔ У вас уже есть АКТИВНАЯ консультация!\nСначала завершите текущую через /finish.", 
+            show_alert=True
+        )
+        
+    elif status == "taken":
         await callback.message.edit_text("⚠️ Эту заявку уже перехватил другой врач.")

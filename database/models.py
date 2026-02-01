@@ -10,7 +10,8 @@ class User(Base):
     __tablename__ = "users"
     
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    role: Mapped[str] = mapped_column(String)  # 'patient', 'doctor'
+    username: Mapped[str] = mapped_column(String, nullable=True)
+    role: Mapped[str] = mapped_column(String)
     full_name: Mapped[str] = mapped_column(String, nullable=True)
 
 class Consultation(Base):
@@ -20,7 +21,9 @@ class Consultation(Base):
     patient_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id"))
     doctor_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id"), nullable=True)
     
-    # Статусы: 'queued' (в очереди), 'active' (идет), 'closed' (завершена)
     status: Mapped[str] = mapped_column(String, default="queued", index=True)
     symptoms: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    
+    # НОВОЕ ПОЛЕ: Время, когда врач нажал /finish
+    finish_requested_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
